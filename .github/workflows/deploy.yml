@@ -15,7 +15,7 @@ jobs:
         command: install
         args: cargo-web wasm-pack
 
-    - run: wasm-pack build --target web --out-name wasm --out-dir ./public
+    - run: wasm-pack build --target web --out-name wasm --out-dir public
     - run: mkdir -p public
     - run: cp index.html public/index.html
     - run: ls
