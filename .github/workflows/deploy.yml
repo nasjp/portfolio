@@ -8,14 +8,14 @@ on:
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v1
-    - uses: actions-rs/cargo@v1
-      with:
-        command: install
-        args: cargo-web wasm-pack
+    # steps:
+    # - uses: actions/checkout@v1
+    # - uses: actions-rs/cargo@v1
+    #   with:
+    #     command: install
+    #     args: cargo-web wasm-pack
 
-    - run: wasm-pack build --target web --out-name wasm --out-dir ./static
+    # - run: wasm-pack build --target web --out-name wasm --out-dir ./static
     - run: cp index.html static/index.html
 
     - uses: peaceiris/actions-gh-pages@v3
