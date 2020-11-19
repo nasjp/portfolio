@@ -18,8 +18,7 @@ jobs:
     - run: wasm-pack build --target web --out-name wasm --out-dir ./static
     - run: cp index.html static/index.html
 
-    - uses: peaceiris/actions-gh-pages@v2.4.0
-      env:
-        PERSONAL_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
-        PUBLISH_BRANCH: gh-pages
-        PUBLISH_DIR: ./static
+    - uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./static
