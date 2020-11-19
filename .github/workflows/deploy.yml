@@ -10,13 +10,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
-    # - uses: actions-rs/cargo@v1
-      # with:
-      #   command: install
-      #   args: cargo-web wasm-pack
+    - uses: actions-rs/cargo@v1
+      with:
+        command: install
+        args: cargo-web wasm-pack
 
-    # - run: wasm-pack build --target web --out-name wasm --out-dir ./public
-    - run: mkdir public
+    - run: wasm-pack build --target web --out-name wasm --out-dir ./public
+    - run: mkdir -p public
     - run: cp index.html public/index.html
     - run: ls
     - run: ls public
