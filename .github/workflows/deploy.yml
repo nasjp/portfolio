@@ -13,13 +13,13 @@ jobs:
     - uses: actions-rs/cargo@v1
       with:
         command: install
-        args: --force cargo-web
-    - uses: actions-rs/cargo@v1
-      with:
-        command: web
-        args: deploy
+        args: cargo-web wasm-pack
+
+    - run: wasm-pack build --target web --out-name wasm --out-dir ./static
+    - run: cp index.html static/index.html
+
     - uses: peaceiris/actions-gh-pages@v2.4.0
       env:
         PERSONAL_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
         PUBLISH_BRANCH: gh-pages
-        PUBLISH_DIR: ./target/deploy
+        PUBLISH_DIR: ./static
