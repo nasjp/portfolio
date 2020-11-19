@@ -15,10 +15,12 @@ jobs:
         command: install
         args: cargo-web wasm-pack
 
-    - run: wasm-pack build --target web --out-name wasm --out-dir ./static
-    - run: cp index.html static
+    - run: wasm-pack build --target web --out-name wasm --out-dir ./public
+    - run: cp index.html public/index.html
+    - run: ls
+    - run: ls public
 
     - uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./static
+        publish_dir: ./public
