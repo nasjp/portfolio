@@ -17,7 +17,7 @@ jobs:
         password: ${{ secrets.CR_PAT }}
     - run: docker pull ghcr.io/nasjp/dockerimages/rust-wasm-pack:latest
     - run: docker run -v $PWD:/app --workdir=/app ghcr.io/nasjp/dockerimages/rust-wasm-pack:latest bash -c "wasm-pack build --target web --out-name wasm --out-dir public"
-    - run: rm -f public/.gitignore
+    - run: sudo rm -f public/.gitignore
     - run: cp index.html public
     - uses: peaceiris/actions-gh-pages@v3
       with:
