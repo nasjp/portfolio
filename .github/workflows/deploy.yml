@@ -15,17 +15,11 @@ jobs:
         registry: ghcr.io
         username: ${{ github.repository_owner }}
         password: ${{ secrets.CR_PAT }}
-
-  container:
-    runs-on: ubuntu-latest
-    steps:
     # - run: docker pull docker.pkg.github.com/nasjp/dockerimages/rust-wasm-pack:latest
     - run: docker run  -v $PWD:/app --workdir=/app docker.pkg.github.com/nasjp/dockerimages/rust-wasm-pack:latest bash -c "wasm-pack build --target web --out-name wasm --out-dir ./public"
-
     - run: cp index.html public/index.html
     - run: ls
     - run: ls public
-
     - uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
