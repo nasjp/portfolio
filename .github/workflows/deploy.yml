@@ -10,13 +10,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
-    - uses: actions-rs/cargo@v1
+    - uses: docker/login-action@v1
       with:
-        command: install
-        args: cargo-web wasm-pack
+        registry: ghcr.io
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.CR_PAT }}
 
-    - run: wasm-pack build --target web --out-name wasm --out-dir public
-    - run: mkdir -p public
+    - run: docker pull docker.pkg.github.com/nasjp/dockerimages/rust-wasm-pack:latest
+    - run: docker run  -v $PWD:/app --workdir=/app docker.pkg.github.com/nasjp/dockerimages/rust-wasm-pack:latest bash -c "wasm-pack build --target web --out-name wasm --out-dir ./public"
+
     - run: cp index.html public/index.html
     - run: ls
     - run: ls public
