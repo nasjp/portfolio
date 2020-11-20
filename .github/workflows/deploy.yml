@@ -10,18 +10,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
-    - run: mkdir public
-    # - run: cp index.html public/index.html
     - run: echo "<html>hello world</html>" > public/index.html
-    # - uses: docker/login-action@v1
-    #   with:
-    #     registry: ghcr.io
-    #     username: ${{ github.repository_owner }}
-    #     password: ${{ secrets.CR_PAT }}
-    # - run: docker pull ghcr.io/nasjp/dockerimages/rust-wasm-pack:latest
-    # - run: docker run -v $PWD:/app --workdir=/app ghcr.io/nasjp/dockerimages/rust-wasm-pack:latest bash -c "wasm-pack build --target web --out-name wasm --out-dir ./public"
-    - run: ls
-    - run: ls public
+    - uses: docker/login-action@v1
+      with:
+        registry: ghcr.io
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.CR_PAT }}
+    - run: docker pull ghcr.io/nasjp/dockerimages/rust-wasm-pack:latest
+    - run: docker run -v $PWD:/app --workdir=/app ghcr.io/nasjp/dockerimages/rust-wasm-pack:latest bash -c "wasm-pack build --target web --out-name wasm --out-dir ./public"
+    - run: rm -f public/.gitignore
+    - run: cp index.html public/index.html
     - uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
