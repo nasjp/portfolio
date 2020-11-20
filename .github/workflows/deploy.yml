@@ -6,7 +6,7 @@ on:
     - main
 
 jobs:
-  build-deploy:
+  login:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
@@ -16,7 +16,10 @@ jobs:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.CR_PAT }}
 
-    - run: docker pull docker.pkg.github.com/nasjp/dockerimages/rust-wasm-pack:latest
+  container:
+    runs-on: ubuntu-latest
+    steps:
+    # - run: docker pull docker.pkg.github.com/nasjp/dockerimages/rust-wasm-pack:latest
     - run: docker run  -v $PWD:/app --workdir=/app docker.pkg.github.com/nasjp/dockerimages/rust-wasm-pack:latest bash -c "wasm-pack build --target web --out-name wasm --out-dir ./public"
 
     - run: cp index.html public/index.html
