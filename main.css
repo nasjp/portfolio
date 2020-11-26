@@ -1,0 +1,16 @@
+.current {
+  border: none;
+  background: none;
+  outline: none;
+  padding: 0px;
+}
+
+.line {
+  font-size: 12px;
+  font-family: 'Microsoft Sans Serif';
+}
+
+.lines {
+  list-style: none;
+}
+
