@@ -9,11 +9,19 @@ pub struct Shell {
 impl Shell {
     pub fn exec(&mut self) {
         self.histories.push(self.current.clone());
+
+        let r = Line {
+            now: Default::default(),
+            work_dir: Default::default(),
+            value: self.e(),
+            typ: LineType::ExecResult,
+        };
+        self.histories.push(r);
+
         self.current = Default::default();
     }
 
     pub fn prompt(&self) -> String {
-        // format!("[{}] $ ", self.current.work_dir.base)
         format!("[{}] $ ", self.current.now)
     }
 
@@ -25,9 +33,13 @@ impl Shell {
         self.histories.clone()
     }
 
-    // fn e(&mut self) {
-    //     self.current.value
-    // }
+    fn e(&mut self) -> String {
+        let r = self.current.parse();
+        match r {
+            Ok(cmd) => cmd.run(),
+            Err(e) => e,
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -35,6 +47,7 @@ pub struct Line {
     now: String,
     work_dir: WorkDir,
     value: String,
+    typ: LineType,
 }
 
 impl Default for Line {
@@ -43,7 +56,29 @@ impl Default for Line {
             now: get_current_time(),
             work_dir: Default::default(),
             value: Default::default(),
+            typ: LineType::Statement,
         }
+    }
+}
+
+impl Line {
+    fn parse(&self) -> Result<Cmd, String> {
+        if self.value.starts_with("echo") {
+            return Ok(Cmd::Echo(self.value.replacen("echo", "", 1)));
+        }
+
+        if self.value.starts_with("pwd") {
+            return Ok(Cmd::Pwd(self.work_dir.dir.to_string()));
+        }
+
+        let vec: Vec<&str> = self.value.split_whitespace().collect();
+
+        if vec.is_empty() {
+            return Ok(Cmd::Return);
+        }
+
+        let cmd = vec[0].trim().to_string();
+        Err(format!("shell: Unknown command: {}", cmd))
     }
 }
 
@@ -54,20 +89,48 @@ fn get_current_time() -> String {
 
 impl fmt::Display for Line {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        // write!(f, "[{}] $ {}", self.work_dir.base, self.value)
-        write!(f, "[{}] $ {}", self.now, self.value)
+        match self.typ {
+            LineType::Statement => write!(f, "[{}] $ {}", self.now, self.value),
+            LineType::ExecResult => write!(f, "{}", self.value),
+        }
     }
 }
 
 #[derive(Debug, Clone)]
-pub struct WorkDir {
-    base: String,
+struct WorkDir {
+    dir: String,
 }
 
 impl Default for WorkDir {
     fn default() -> Self {
         Self {
-            base: "/home/ec8-user".to_string(),
+            dir: "/home/ec8-user".to_string(),
         }
+    }
+}
+
+#[derive(Debug, Clone)]
+enum LineType {
+    Statement,
+    ExecResult,
+}
+
+enum Cmd {
+    Echo(String),
+    Pwd(String),
+    Return,
+}
+
+impl Cmd {
+    fn run(&self) -> String {
+        match self {
+            Self::Echo(v) => Self::echo(v.to_string()),
+            Self::Pwd(v) => Self::echo(v.to_string()),
+            Self::Return => "".to_string(),
+        }
+    }
+
+    fn echo(value: String) -> String {
+        value
     }
 }

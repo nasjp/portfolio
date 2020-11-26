@@ -5,15 +5,15 @@ extern crate web_sys;
 
 pub mod shell;
 
+enum Msg {
+    Update(String),
+    Key(String),
+}
+
 struct Model {
     link: ComponentLink<Self>,
     shell: shell::Shell,
     input_ref: NodeRef,
-}
-
-enum Msg {
-    Update(String),
-    Key(String),
 }
 
 impl Component for Model {
@@ -53,15 +53,17 @@ impl Component for Model {
     fn view(&self) -> Html {
         html! {
             <div>
-                <ul style="border: none; background: none; outline: none; padding: 0px; font-size: 12px; font-family: 'Microsoft Sans Serif'">
-                    { for self.shell.histories().iter().enumerate().map(|e| self.view_entry(e)) }
-                    { self.shell.prompt() } <input
-                        ref=self.input_ref.clone()
-                        style="border: none; background: none; outline: none; padding: 0px; font-size: 12px;"
-                        class=""
-                        oninput=self.link.callback(|e: InputData| Msg::Update(e.value))
-                        onkeypress=self.link.callback(|e: KeyboardEvent| Msg::Key(e.key()))
-                    />
+                <ul class="lines">
+                    { for self.shell.histories().iter().enumerate().map(|e| self.show_line(e)) }
+                    <div class="line">
+                        { self.shell.prompt() }
+                        <input
+                            ref=self.input_ref.clone()
+                            class="current"
+                            oninput=self.link.callback(|e: InputData| Msg::Update(e.value))
+                            onkeypress=self.link.callback(|e: KeyboardEvent| Msg::Key(e.key()))
+                        />
+                    </div>
                 </ul>
             </div>
         }
@@ -69,10 +71,10 @@ impl Component for Model {
 }
 
 impl Model {
-    fn view_entry(&self, (_, line): (usize, &shell::Line)) -> Html {
+    fn show_line(&self, (_, line): (usize, &shell::Line)) -> Html {
         html! {
             <>
-                <li>
+                <li class="line">
                 { format!{"{}",  line }}
                 </li>
             </>
