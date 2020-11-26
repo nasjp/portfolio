@@ -1,50 +1,55 @@
 use std::fmt;
 
-#[derive(Debug)]
+#[derive(Default, Debug)]
 pub struct Shell {
-    pub histories: Vec<Line>,
-    pub current: Line,
-}
-
-#[derive(Debug, Clone)]
-pub struct Line {
-    pub now: String,
-    pub work_dir: WorkDir,
-    pub value: String,
-}
-
-#[derive(Debug, Clone)]
-pub struct WorkDir {
-    pub base: String,
-}
-
-pub fn init_shell() -> Shell {
-    Shell {
-        histories: vec![],
-        current: init_line(),
-    }
-}
-
-fn init_line() -> Line {
-    Line {
-        now: get_current_time(),
-        work_dir: WorkDir {
-            base: "/home/ec8-user".to_string(),
-        },
-        value: "".to_string(),
-    }
+    histories: Vec<Line>,
+    current: Line,
 }
 
 impl Shell {
     pub fn exec(&mut self) {
         self.histories.push(self.current.clone());
-        self.current = init_line();
+        self.current = Default::default();
     }
 
     pub fn prompt(&self) -> String {
         // format!("[{}] $ ", self.current.work_dir.base)
         format!("[{}] $ ", self.current.now)
     }
+
+    pub fn update(&mut self, value: String) {
+        self.current.value = value
+    }
+
+    pub fn histories(&self) -> Vec<Line> {
+        self.histories.clone()
+    }
+
+    // fn e(&mut self) {
+    //     self.current.value
+    // }
+}
+
+#[derive(Debug, Clone)]
+pub struct Line {
+    now: String,
+    work_dir: WorkDir,
+    value: String,
+}
+
+impl Default for Line {
+    fn default() -> Self {
+        Self {
+            now: get_current_time(),
+            work_dir: Default::default(),
+            value: Default::default(),
+        }
+    }
+}
+
+fn get_current_time() -> String {
+    let date = js_sys::Date::new_0();
+    String::from(date.to_locale_time_string("en-US"))
 }
 
 impl fmt::Display for Line {
@@ -54,13 +59,15 @@ impl fmt::Display for Line {
     }
 }
 
-impl Line {
-    pub fn update(&mut self, value: String) {
-        self.value = value
-    }
+#[derive(Debug, Clone)]
+pub struct WorkDir {
+    base: String,
 }
 
-fn get_current_time() -> String {
-    let date = js_sys::Date::new_0();
-    String::from(date.to_locale_time_string("en-US"))
+impl Default for WorkDir {
+    fn default() -> Self {
+        Self {
+            base: "/home/ec8-user".to_string(),
+        }
+    }
 }

@@ -20,20 +20,16 @@ impl Component for Model {
     type Message = Msg;
     type Properties = ();
     fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
-        let input_ref = NodeRef::default();
-
-        let shell = shell::init_shell();
-
         Self {
             link,
-            shell,
-            input_ref,
+            shell: Default::default(),
+            input_ref: NodeRef::default(),
         }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
-            Msg::Update(val) => self.shell.current.update(val),
+            Msg::Update(val) => self.shell.update(val),
             Msg::Key(val) => self.check_key(val),
         }
 
@@ -45,9 +41,6 @@ impl Component for Model {
     }
 
     fn change(&mut self, _props: Self::Properties) -> ShouldRender {
-        // Should only return "true" if new properties are different to
-        // previously received properties.
-        // This component has no properties so we will always return "false".
         false
     }
 
@@ -61,13 +54,11 @@ impl Component for Model {
         html! {
             <div>
                 <ul style="border: none; background: none; outline: none; padding: 0px; font-size: 12px; font-family: 'Microsoft Sans Serif'">
-                    { for self.shell.histories.iter().enumerate().map(|e| self.view_entry(e)) }
-                    { self.shell.prompt() }
-                    <input
+                    { for self.shell.histories().iter().enumerate().map(|e| self.view_entry(e)) }
+                    { self.shell.prompt() } <input
                         ref=self.input_ref.clone()
                         style="border: none; background: none; outline: none; padding: 0px; font-size: 12px;"
                         class=""
-                        value=&self.shell.current.value
                         oninput=self.link.callback(|e: InputData| Msg::Update(e.value))
                         onkeypress=self.link.callback(|e: KeyboardEvent| Msg::Key(e.key()))
                     />
